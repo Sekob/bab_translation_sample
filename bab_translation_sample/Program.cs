@@ -17,11 +17,11 @@ Console.WriteLine("Listening...");
 
 var text = await azureSpeechProcessor.CaptureSpeechAsTextAsync();
 
-Console.WriteLine(text);
+Console.WriteLine(text); 
 
 using var translator = new AzureTextTranslater(subscriptionKey, location);
 var translatedText = (await translator.TranslateAsync("ru", "en", text))?.Text;
-
+// Send text to another participant
 Console.WriteLine(translatedText switch { null => translationError, not null => translatedText });
-
+// Get text from speaker (another participant) and speek it with voice morphing
 await azureSpeechProcessor.SpeekTextAsync(translatedText);

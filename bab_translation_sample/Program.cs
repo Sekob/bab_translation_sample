@@ -3,6 +3,7 @@
 const string subscriptionKey = "b43ff619a87649089b35854e385bf4a3";
 const string location = "global";
 const string translationError = "Something wrong have happened during translation";
+var endpoint = new Uri("https://commuication-testing.communication.azure.com/");
 
 var configuration = new AzureSpeachProcessor.AuzreSpeechProcessorConfiguration
 {
@@ -11,13 +12,26 @@ var configuration = new AzureSpeachProcessor.AuzreSpeechProcessorConfiguration
     SubscriptionKey = "9754f231122844279963d0dff225648f"
 };
 
+AzureChatService chatService = new AzureChatService(endpoint, "key");
+
+System.Console.WriteLine("Choose user please: 1 - Alice, 2 - Jessy");
+System.Console.WriteLine("Your choice:");
+var userId = System.Console.ReadLine();
+var creds = userId switch
+{
+    "1" => ("Alice", "token1"),
+    "2" => ("Jessy", "token2"),
+    _ => throw new ArgumentException("Incorrect choice")
+};
+var chat = chatService.ConnectToChat("Test", new AzureChatParticipant {Name=creds.Item1, Token=creds.Item2});
+
 using var azureSpeechProcessor = new AzureSpeachProcessor(configuration);
 
 Console.WriteLine("Listening...");
 
 var text = await azureSpeechProcessor.CaptureSpeechAsTextAsync();
 
-Console.WriteLine(text); 
+Console.WriteLine(text);
 
 using var translator = new AzureTextTranslater(subscriptionKey, location);
 var translatedText = (await translator.TranslateAsync("ru", "en", text))?.Text;

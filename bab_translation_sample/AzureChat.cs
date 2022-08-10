@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Azure;
 using Azure.Communication.Chat;
@@ -28,13 +29,20 @@ public class AzureChat : IChat
        return (IList<IChatMessage>)resultMessages; 
     }
 
-    public IReadOnlyCollection<IChatParticipant> GetParticipants()
+    public async Task<IReadOnlyCollection<IChatParticipant>> GetParticipants()
     {
-        throw new System.NotImplementedException();
+        var chatParticipant = new List<ChatParticipant>();
+        var participants = _threadClient.GetParticipantsAsync();
+        await foreach(var participant in participants)
+        {
+            chatParticipant.Add(participant);
+        }
+        return chatParticipant.Select(p=> new AzureChatParticipant{Name = p.DisplayName}).ToList();
     }
 
-    public Task SendMessageAsync(IChatMessage message)
+    // TODO: need support different chat message types
+    public async Task SendMessageAsync(IChatMessage message)
     {
-        throw new System.NotImplementedException();
+        await _threadClient.SendMessageAsync(message.Text, ChatMessageType.Text, message.SenderName);
     }
 }

@@ -14,21 +14,21 @@ var configuration = new AzureSpeachProcessor.AuzreSpeechProcessorConfiguration
 
 AzureChatService chatService = new AzureChatService(endpoint, "key");
 
-System.Console.WriteLine("Choose user please: 1 - Alice, 2 - Jessy");
+System.Console.WriteLine("Choose user please: 1 - Speaker, 2 - Listener");
 System.Console.WriteLine("Your choice:");
 var userId = System.Console.ReadLine();
 var creds = userId switch
 {
-    "1" => ("Alice", "token1"),
-    "2" => ("Jessy", "token2"),
+    "1" => ("Speaker", "token1"),
+    "2" => ("Listener", "token2"),
     _ => throw new ArgumentException("Incorrect choice")
 };
 var chat = chatService.ConnectToChat("Test", new AzureChatParticipant {Name=creds.Item1, Token=creds.Item2});
 
 using var azureSpeechProcessor = new AzureSpeachProcessor(configuration);
 
-Console.WriteLine("Listening...");
 
+System.Console.WriteLine("Listening...");
 var text = await azureSpeechProcessor.CaptureSpeechAsTextAsync();
 
 Console.WriteLine(text);
